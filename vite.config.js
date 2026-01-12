@@ -21,6 +21,8 @@ export default ({ mode }) => {
           server.middlewares.use((req, res, next) => {
             try {
               let orig = req.url.split('?')[0];
+              // lightweight logging for troubleshooting missing files
+              const shouldLog = /WebGL\//.test(orig);
 
               // match /WebGL/<folder> with no trailing slash and no file extension -> serve index.html
               if (/^\/WebGL\/[^/.]+$/.test(orig)) {
@@ -33,6 +35,34 @@ export default ({ mode }) => {
               if (!/^(GET|HEAD)$/i.test(req.method)) return next();
 
               const publicRoot = path.join(server.config.root, 'public');
+
+              // If request already targets a compressed file (ends with .br or .gz), serve it and set encoding
+              if (orig.endsWith('.br') || orig.endsWith('.gz')) {
+                const encoding = orig.endsWith('.br') ? 'br' : 'gzip';
+                const fileOnDisk = path.join(publicRoot, decodeURIComponent(orig));
+                const exists = fs.existsSync(fileOnDisk) && fs.statSync(fileOnDisk).isFile();
+                if (shouldLog) console.log('[vite:webgl] request', orig, '-> compressed-target, exists=', exists);
+                if (exists) {
+                  res.setHeader('Content-Encoding', encoding);
+                  res.setHeader('Vary', 'Accept-Encoding');
+
+                  const uncompressedName = orig.replace(/\.(br|gz)$/, '');
+                  const ext = path.extname(uncompressedName).toLowerCase();
+                  const contentTypes = {
+                    '.js': 'application/javascript',
+                    '.wasm': 'application/wasm',
+                    '.data': 'application/octet-stream',
+                    '.mem': 'application/octet-stream',
+                    '.html': 'text/html; charset=utf-8',
+                    '.css': 'text/css; charset=utf-8',
+                    '.json': 'application/json; charset=utf-8'
+                  };
+                  res.setHeader('Content-Type', contentTypes[ext] || 'application/octet-stream');
+                  fs.createReadStream(fileOnDisk).on('error', (e) => next(e)).pipe(res);
+                  return;
+                }
+              }
+
               const targetPath = path.join(publicRoot, decodeURIComponent(orig));
 
               const acceptEnc = (req.headers['accept-encoding'] || '');
@@ -43,7 +73,12 @@ export default ({ mode }) => {
               const gzPath = targetPath + '.gz';
 
               // prefer Brotli when supported
-              if (supportsBrotli && fs.existsSync(brPath) && fs.statSync(brPath).isFile()) {
+              const brExists = fs.existsSync(brPath) && fs.statSync(brPath).isFile();
+              const gzExists = fs.existsSync(gzPath) && fs.statSync(gzPath).isFile();
+              const fileExists = fs.existsSync(targetPath) && fs.statSync(targetPath).isFile();
+              if (shouldLog) console.log('[vite:webgl] request', orig, { supportsBrotli, supportsGzip, brExists, gzExists, fileExists });
+
+              if (supportsBrotli && brExists) {
                 res.setHeader('Content-Encoding', 'br');
                 res.setHeader('Vary', 'Accept-Encoding');
                 const ext = path.extname(orig).toLowerCase();
@@ -62,7 +97,7 @@ export default ({ mode }) => {
               }
 
               // then gzip
-              if (supportsGzip && fs.existsSync(gzPath) && fs.statSync(gzPath).isFile()) {
+              if (supportsGzip && gzExists) {
                 res.setHeader('Content-Encoding', 'gzip');
                 res.setHeader('Vary', 'Accept-Encoding');
                 const ext = path.extname(orig).toLowerCase();
@@ -79,6 +114,8 @@ export default ({ mode }) => {
                 fs.createReadStream(gzPath).on('error', (e) => next(e)).pipe(res);
                 return;
               }
+
+              if (shouldLog && !brExists && !gzExists && !fileExists) console.log('[vite:webgl] not found on disk:', targetPath);
 
             } catch (e) {
               // ignore and continue
