@@ -10,7 +10,27 @@ export default ({ mode }) => {
   };
 
   return defineConfig({
-    plugins: [vue()],
+    plugins: [
+      vue(),
+      // Rewrite requests like /WebGL/ArrowEscape -> /WebGL/ArrowEscape/index.html
+      {
+        name: 'vite-plugin-webgl-index-rewrite',
+        configureServer(server) {
+          server.middlewares.use((req, res, next) => {
+            try {
+              const orig = req.url.split('?')[0];
+              // match /WebGL/<folder> with no trailing slash and no file extension
+              if (/^\/WebGL\/[^/.]+$/.test(orig)) {
+                req.url = orig + '/index.html';
+              }
+            } catch (e) {
+              // ignore and continue
+            }
+            next();
+          });
+        }
+      }
+    ],
     base: '/',
     resolve: {
       alias: [
