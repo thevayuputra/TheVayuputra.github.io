@@ -15,7 +15,6 @@ export default ({ mode }) => {
     
     plugins: [
       vue(),
-      // Rewrite requests like /WebGL/ArrowEscape or /WebGL/ArrowEscape/ -> /WebGL/ArrowEscape/index.html
       {
         name: 'vite-plugin-webgl-index-rewrite',
         configureServer(server) {
@@ -38,7 +37,6 @@ export default ({ mode }) => {
     base: '/',
     resolve: {
       alias: [
-        // thanks to https://stackoverflow.com/a/67676242/22296059 :)
         { find: "@", replacement: fileURLToPath(new URL('./src', import.meta.url)) }
       ]
     },
