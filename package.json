@@ -1,7 +1,7 @@
 {
   "name": "portfolio",
   "version": "0.1.0",
-  "homepage": "https://TheVayuputra.github.io/ProjectHub",
+  "homepage": "https://TheVayuputra.github.io",
   "private": true,
   "scripts": {
     "serve": "vite preview --port 8080",
