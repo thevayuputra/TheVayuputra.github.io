@@ -1,0 +1,43 @@
+{
+  "baseUrl": "https://savaliyamanish.github.io/ProjectHub/",
+  "gameProjects": [
+    {
+      "id": "3_knifehit",
+      "override": {}
+    },
+    {
+      "id": "5_sudoku",
+      "override": {}      
+    },
+    {
+      "id": "2_uno",
+      "override": {}      
+    },
+    {
+      "id": "6_matchpuzzle",
+      "override": {}
+      
+    },
+    {
+      "id": "7_pipeout",
+      "override": {}      
+    },
+    {
+      "id": "8_panchout",
+      "override": {}      
+    },   
+    {
+      "id": "31_ColorPoint",
+      "override": {}      
+    },
+    {
+      "id": "9_music",
+      "override": {}
+    },
+    {
+      "id": "4_kidgame",
+      "override": {}
+    }
+  ],
+  "otherProjects": []
+}
