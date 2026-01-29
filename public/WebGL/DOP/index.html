@@ -10,10 +10,27 @@
 		div#container {background:transparent !important;position:absolute;}
 		div#container canvas {position:absolute;}
 		div#container canvas[data-pixel-art="true"] {position:absolute;image-rendering:optimizeSpeed;image-rendering:-webkit-crisp-edges;image-rendering:-moz-crisp-edges;image-rendering:-o-crisp-edges;image-rendering:crisp-edges;image-rendering:-webkit-optimize-contrast;image-rendering:optimize-contrast;image-rendering:pixelated;-ms-interpolation-mode:nearest-neighbor;}
+		div#loading-overlay {position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.5s ease-out;}
+		div#loading-overlay.hidden {opacity:0;pointer-events:none;}
+		div#loading-overlay img {max-width:200px;max-height:200px;margin-bottom:40px;animation:fadeIn 0.5s ease-in;}
+		div#loading-text {color:#000000;font-size:20px;font-family:Arial,sans-serif;text-align:center;}
+		div#progress-bar-container {width:300px;height:20px;background:rgba(255,255,255,0.2);border-radius:10px;margin-top:20px;overflow:hidden;}
+		div#progress-bar {height:100%;background:#000000;width:0%;transition:width 0.1s linear;border-radius:10px;}
+		@keyframes fadeIn {from {opacity:0;} to {opacity:1;}}
 	</style>
 </head>
 
 <body>
+	<div id="loading-overlay">
+		<img id="game-logo" src="loadingLogo.png" alt="Game Logo">
+		<div id="loading-text">
+			<div>Loading</div>
+			<div id="loading-percentage">0%</div>
+			<div id="progress-bar-container">
+				<div id="progress-bar"></div>
+			</div>
+		</div>
+	</div>
 	<div id="container">
 		<canvas id="game-canvas" data-pixel-art="true"></canvas>
 		<script src="Build/DOP.loader.js"></script>
@@ -39,9 +56,10 @@
 			
 			function progressHandler(progress)
 			{
-				var percent = progress * 100 + '%';
-				canvas.style.background = 'linear-gradient(to right, black, black ' + percent + ', transparent ' + percent + ', transparent) no-repeat center';
-				canvas.style.backgroundSize = '100% 1rem';
+				var percent = Math.round(progress * 100);
+				var percentStr = percent + '%';
+				document.getElementById('loading-percentage').textContent = percentStr;
+				document.getElementById('progress-bar').style.width = percentStr;
 			}
 			
 			function onResize()
@@ -78,6 +96,7 @@
 			{
 				canvas = instance.Module.canvas;
 				onResize();
+				document.getElementById('loading-overlay').classList.add('hidden');
 			});
 			
 			window.addEventListener('resize', onResize);
