@@ -5,6 +5,7 @@ const AboutView = () => import('../views/About.vue');
 const GameView = () => import('../views/GameProjects.vue')
 const OtherView = () => import('../views/OtherProjects.vue')
 const ContactView = () => import('../views/Contact.vue')
+const PrivacyPolicyView = () => import('../views/PrivacyPolicy.vue')
 const E404View = () => import('../views/404.vue')
 
 export function createRouter(){
@@ -40,6 +41,11 @@ export function createRouter(){
         path: '/contact',
         name: 'Contact',
         component: ContactView
+      },
+      {
+        path: '/privacy-policy',
+        name: 'Privacy Policy',
+        component: PrivacyPolicyView
       },
       {
         path: '/:projectId',

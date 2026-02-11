@@ -1,6 +1,13 @@
 <template>
   <div class="footer">
-    <div class="right">Reach me at <a href="mailto:vayuputra.developer@gmail.com">vayuputra.developer@gmail.com</a> or <router-link to="/contact">Contact Me</router-link></div>
+    <div class="right">
+      Reach me at
+      <a href="mailto:vayuputra.developer@gmail.com">vayuputra.developer@gmail.com</a>
+      or
+      <router-link to="/contact">Contact Me</router-link>
+      ·
+      <router-link to="/privacy-policy">Privacy Policy</router-link>
+    </div>
   </div>
 </template>
 
