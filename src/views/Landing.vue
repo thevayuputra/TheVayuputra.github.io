@@ -4,7 +4,7 @@
 
     <section class="section about">
       <div class="section-head">
-        <h2>Who We Are</h2>
+        <h3>Polished games. Powerful templates.</h3>
       </div>
       <div class="about-card">
         <p>
