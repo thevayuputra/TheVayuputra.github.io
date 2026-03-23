@@ -13,7 +13,7 @@
         </span>
       </button>
       <nav class="nav-links" :class="{ 'menu-open': isMenuOpen }">
-        <!-- <router-link to="/" @click="closeMenu">About me</router-link> -->
+        <router-link to="/" @click="closeMenu">Home</router-link>
         <router-link to="/game-projects" @click="closeMenu">Games</router-link>
         <!-- <router-link to="/other-projects" @click="closeMenu">Other Projects</router-link>       -->
         <router-link to="/contact" @click="closeMenu">Contact</router-link>
